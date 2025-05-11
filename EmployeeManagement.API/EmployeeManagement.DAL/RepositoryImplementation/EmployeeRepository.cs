@@ -47,9 +47,28 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             }
         }
 
-        public Task<bool> EditEmployeeAsync(Employee employee)
+        public async Task<bool> EditEmployeeAsync(Employee employee)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (employee == null)
+                    return false;
+
+                var isEmployeeExist = await _dbContext.Employees
+                                                      .AnyAsync(x => x.EmployeeId == employee.EmployeeId
+                                                                     && x.IsDeleted == false);
+                if(isEmployeeExist)
+                {
+                    _dbContext.Update(employee);
+                    return await _dbContext.SaveChangesAsync() > 0;
+                }
+                
+                return false; // if data not found
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<List<Employee>> GetAllEmployeesAsync()
