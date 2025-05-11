@@ -5,9 +5,17 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
 {
     internal class StateRepository : IStateRepository
     {
-        public Task<bool> AddState(State state)
+        private readonly employeemanagementContext _dbContext;
+
+        public StateRepository(employeemanagementContext employeemanagementContext)
         {
-            throw new NotImplementedException();
+            _dbContext = employeemanagementContext;
+        }
+
+        public async Task<bool> AddStateAsync(State state)
+        {
+            _dbContext.States.Add(state);
+            return await _dbContext.SaveChangesAsync() > 0;
         }
 
         public Task<bool> DeleteState(Guid stateId)
