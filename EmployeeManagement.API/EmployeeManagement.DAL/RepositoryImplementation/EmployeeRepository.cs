@@ -57,9 +57,18 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             throw new NotImplementedException();
         }
 
-        public Task<Employee> GetEmployeeById(Guid employeeId)
+        public async Task<Employee> GetEmployeeById(Guid employeeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _dbContext.Employees
+                             .FirstOrDefaultAsync(x => x.EmployeeId == employeeId
+                                                       && x.IsDeleted == false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
