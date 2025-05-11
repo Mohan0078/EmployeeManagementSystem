@@ -5,9 +5,9 @@ namespace EmployeeManagement.DAL.RepositoryInterfaces
     public interface IEmployeeRepository
     {
         Task<bool> AddEmployeeAsync(Employee employee);
-        Task<bool> EditEmployee(Employee employee);
-        Task<Employee> GetEmployeeById(Guid employeeId);
-        Task<List<Employee>> GetAllEmployees();
-        Task<bool> DeleteEmployee(Guid employeeId);
+        Task<bool> EditEmployeeAsync(Employee employee);
+        Task<Employee> GetEmployeeByIdAsync(Guid employeeId);
+        Task<List<Employee>> GetAllEmployeesAsync();
+        Task<bool> DeleteEmployeeAsync(Guid employeeId);
     }
 }

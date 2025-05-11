@@ -26,7 +26,7 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             }
         }
 
-        public  async Task<bool> DeleteEmployee(Guid employeeId)
+        public  async Task<bool> DeleteEmployeeAsync(Guid employeeId)
         {
             try
             {
@@ -47,17 +47,26 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             }
         }
 
-        public Task<bool> EditEmployee(Employee employee)
+        public Task<bool> EditEmployeeAsync(Employee employee)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Employee>> GetAllEmployees()
+        public async Task<List<Employee>> GetAllEmployeesAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _dbContext.Employees
+                             .Where(x => x.IsDeleted == false)
+                             .ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public async Task<Employee> GetEmployeeById(Guid employeeId)
+        public async Task<Employee> GetEmployeeByIdAsync(Guid employeeId)
         {
             try
             {
