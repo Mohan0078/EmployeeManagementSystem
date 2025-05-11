@@ -11,6 +11,6 @@ namespace EmployeeManagement.DatabaseEntities.Models
         public DateTime? DateOfJoin { get; set; }
         public decimal? Salary { get; set; }
         public Guid? StateId { get; set; }
-        public string IsDeleted { get; set; } = null!;
+        public bool IsDeleted { get; set; }
     }
 }

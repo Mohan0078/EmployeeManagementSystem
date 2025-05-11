@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.DAL.RepositoryInterfaces;
 using EmployeeManagement.DatabaseEntities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.DAL.RepositoryImplementation
 {
@@ -25,9 +26,25 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             }
         }
 
-        public Task<bool> DeleteEmployee(Guid employeeId)
+        public  async Task<bool> DeleteEmployee(Guid employeeId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var employeeToBeDeleted = await _dbContext.Employees
+                                                .FirstOrDefaultAsync(x => x.EmployeeId == employeeId 
+                                                                    && x.IsDeleted == false);
+                if(employeeToBeDeleted != null)
+                {
+                    employeeToBeDeleted.IsDeleted = true;
+                    return await _dbContext.SaveChangesAsync() > 0;
+                }
+
+                return false; // Not able to delete as the data is not found
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public Task<bool> EditEmployee(Employee employee)
