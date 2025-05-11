@@ -28,9 +28,9 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             throw new NotImplementedException();
         }
 
-        public Task<List<State>> GetAllStates()
+        public async Task<List<State>> GetAllStates()
         {
-            throw new NotImplementedException();
+           return _dbContext.States.ToList();
         }
 
         public Task<State> GetStateById(Guid stateId)
