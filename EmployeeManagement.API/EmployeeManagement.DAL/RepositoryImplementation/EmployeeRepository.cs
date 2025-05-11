@@ -5,9 +5,24 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        public Task<bool> AddEmployeeAsync(Employee employee)
+        private readonly employeemanagementContext _dbContext;
+
+        public EmployeeRepository(employeemanagementContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
+        }
+
+        public async Task<bool> AddEmployeeAsync(Employee employee)
+        {
+            try
+            {
+                _dbContext.Employees.Add(employee);
+                return await _dbContext.SaveChangesAsync() > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public Task<bool> DeleteEmployee(Guid employeeId)
