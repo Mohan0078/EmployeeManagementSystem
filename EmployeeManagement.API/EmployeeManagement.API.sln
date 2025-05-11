@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeManagement.API", "EmployeeManagement.API\EmployeeManagement.API.csproj", "{700CA55B-229D-466A-902B-BEAD6B4204F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeManagement.DatabaseEntities", "EmployeeManagement.DatabaseEntities\EmployeeManagement.DatabaseEntities.csproj", "{A378045C-017E-4010-ACBB-F9FAD66DE81C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeManagement.DatabaseEntities", "EmployeeManagement.DatabaseEntities\EmployeeManagement.DatabaseEntities.csproj", "{A378045C-017E-4010-ACBB-F9FAD66DE81C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeManagement.DAL", "EmployeeManagement.DAL\EmployeeManagement.DAL.csproj", "{83AD9D4A-457B-4AB0-9FC0-66A60527DE8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{A378045C-017E-4010-ACBB-F9FAD66DE81C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A378045C-017E-4010-ACBB-F9FAD66DE81C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A378045C-017E-4010-ACBB-F9FAD66DE81C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83AD9D4A-457B-4AB0-9FC0-66A60527DE8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83AD9D4A-457B-4AB0-9FC0-66A60527DE8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83AD9D4A-457B-4AB0-9FC0-66A60527DE8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83AD9D4A-457B-4AB0-9FC0-66A60527DE8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

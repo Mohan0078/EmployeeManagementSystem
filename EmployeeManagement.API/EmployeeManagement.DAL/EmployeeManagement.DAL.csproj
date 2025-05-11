@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="RepositoryImplementation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeeManagement.DatabaseEntities\EmployeeManagement.DatabaseEntities.csproj" />
+  </ItemGroup>
+
 </Project>
