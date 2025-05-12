@@ -1,6 +1,5 @@
 ﻿using EmployeeManagement.BLL.Interfaces;
 using EmployeeManagement.Models.RequestModel;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.API.Controllers
