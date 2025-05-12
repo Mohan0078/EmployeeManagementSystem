@@ -3,7 +3,7 @@ using EmployeeManagement.DatabaseEntities.Models;
 
 namespace EmployeeManagement.DAL.RepositoryImplementation
 {
-    internal class StateRepository : IStateRepository
+    public class StateRepository : IStateRepository
     {
         private readonly employeemanagementContext _dbContext;
 
