@@ -23,6 +23,7 @@ namespace EmployeeManagement.BLL.Services
 				{
 					MemberId = Guid.NewGuid(),
 					Name = addEditEmployeeRequestModel.Name,
+					Gender = addEditEmployeeRequestModel.Gender,
 					DateOfBirth = addEditEmployeeRequestModel.DateOfBirth,
 					IsDeleted = false
 				});
@@ -64,10 +65,12 @@ namespace EmployeeManagement.BLL.Services
 				  DateOfJoin = x.DateOfJoin,
 				  DateOfBirth = x.Member.DateOfBirth,
 				  Name = x.Member.Name,
+				  Gender = x.Member.Gender,
 				  Designation = x.Designation,
 				  MemberId = x.MemberId,
 				  Salary = x.Salary,
-				  StateId = x.StateId
+				  StateId = x.StateId,
+				  StateName = x.State.StateName
 				}).ToList();
 			}
 			catch (Exception)

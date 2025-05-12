@@ -91,7 +91,8 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             {
                 return await _dbContext.Employees
                              .Include(x => x.Member)
-                             .Where(x => x.IsDeleted == false && x.Member != null)
+                             .Include(x => x.State)
+                             .Where(x => x.IsDeleted == false && x.Member != null && x.State != null)
                              .ToListAsync();
             }
             catch (Exception)

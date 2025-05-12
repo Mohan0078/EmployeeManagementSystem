@@ -13,6 +13,7 @@ namespace EmployeeManagement.DatabaseEntities.Models
         public Guid MemberId { get; set; }
         public string? Name { get; set; }
         public DateTime? DateOfBirth { get; set; }
+        public string? Gender { get; set; }
         public bool IsDeleted { get; set; }
 
         public virtual ICollection<Employee> Employees { get; set; }

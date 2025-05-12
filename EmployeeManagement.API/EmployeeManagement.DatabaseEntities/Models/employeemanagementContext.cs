@@ -65,6 +65,8 @@ namespace EmployeeManagement.DatabaseEntities.Models
 
                 entity.Property(e => e.DateOfBirth).HasColumnType("datetime");
 
+                entity.Property(e => e.Gender).HasMaxLength(10);
+
                 entity.Property(e => e.Name).HasMaxLength(250);
             });
 
