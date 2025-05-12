@@ -17,6 +17,8 @@ builder.Services.AddDbContext<employeemanagementContext>(options =>
 // Add services to the container.
 builder.Services.AddTransient<IStateRepository, StateRepository>();
 builder.Services.AddTransient<IStateService, StateService>();
+builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 
 // CORS: register with explicit origin (127.0.0.1:5500 is from Live Server)
 builder.Services.AddCors(options =>
