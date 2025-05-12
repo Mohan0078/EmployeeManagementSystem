@@ -13,6 +13,20 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             _dbContext = dbContext;
         }
 
+        public async Task<Guid> AddMemberAsync(Member member)
+        {
+            try
+            {
+                _dbContext.Members.Add(member);
+                var isSaved = await _dbContext.SaveChangesAsync() > 0;
+                return isSaved ? member.MemberId : Guid.Empty;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        
         public async Task<bool> AddEmployeeAsync(Employee employee)
         {
             try

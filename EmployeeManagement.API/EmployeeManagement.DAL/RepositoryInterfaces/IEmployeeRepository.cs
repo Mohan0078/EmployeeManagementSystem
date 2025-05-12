@@ -4,6 +4,7 @@ namespace EmployeeManagement.DAL.RepositoryInterfaces
 {
     public interface IEmployeeRepository
     {
+        Task<Guid> AddMemberAsync(Member member);
         Task<bool> AddEmployeeAsync(Employee employee);
         Task<bool> EditEmployeeAsync(Employee employee);
         Task<Employee> GetEmployeeByIdAsync(Guid employeeId);

@@ -18,6 +18,15 @@ namespace EmployeeManagement.BLL.Services
         {
 			try
 			{
+				var addMemberResult = await _employeeRepository.AddMemberAsync(new Member
+				{
+					MemberId = Guid.NewGuid(),
+					Name = addEditEmployeeRequestModel.Name,
+					DateOfBirth = addEditEmployeeRequestModel.DateOfBirth,
+					IsDeleted = false
+				});
+
+				addEditEmployeeRequestModel.MemberId = addMemberResult;
 				var employee = await BuildEmployeeRecord(addEditEmployeeRequestModel);
 
 				return await _employeeRepository.AddEmployeeAsync(employee);
@@ -32,14 +41,14 @@ namespace EmployeeManagement.BLL.Services
 		{
 			return new Employee
 			{
-			  EmployeeId = addEditEmployeeRequestModel.EmployeeId == null ? Guid.NewGuid() : addEditEmployeeRequestModel.EmployeeId.Value,
-			  DateOfJoin = addEditEmployeeRequestModel.DateOfJoin,
-			  Designation = addEditEmployeeRequestModel.Designation,
-			  IsDeleted = addEditEmployeeRequestModel.IsDeleted,
-			  MemberId = addEditEmployeeRequestModel.MemberId,
-			  Salary = addEditEmployeeRequestModel.Salary,
-			  StateId = addEditEmployeeRequestModel.StateId
-            }
+				EmployeeId = addEditEmployeeRequestModel.EmployeeId == null ? Guid.NewGuid() : addEditEmployeeRequestModel.EmployeeId.Value,
+				DateOfJoin = addEditEmployeeRequestModel.DateOfJoin,
+				Designation = addEditEmployeeRequestModel.Designation,
+				IsDeleted = false,
+				MemberId = addEditEmployeeRequestModel.MemberId,
+				Salary = addEditEmployeeRequestModel.Salary,
+				StateId = addEditEmployeeRequestModel.StateId
+			};
 		}
     }
 }

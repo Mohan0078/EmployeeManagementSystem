@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.BLL.Interfaces;
+using EmployeeManagement.Models.RequestModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,19 @@ namespace EmployeeManagement.API.Controllers
             try
             {
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPost("AddEmployee")]
+        public async Task<IActionResult> AddEmployee(AddEditEmployeeRequestModel addEditEmployeeRequestModel)
+        {
+            try
+            {
+                var result = await _employeeService.AddEmployeeAsync(addEditEmployeeRequestModel);
+                return Ok(result);
             }
             catch (Exception ex)
             {
