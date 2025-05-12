@@ -11,6 +11,5 @@
         public DateTime? DateOfJoin { get; set; }
         public decimal? Salary { get; set; }
         public Guid? StateId { get; set; }
-        public bool IsDeleted { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using EmployeeManagement.DAL.RepositoryInterfaces;
 using EmployeeManagement.DatabaseEntities.Models;
 using EmployeeManagement.Models.RequestModel;
+using EmployeeManagement.Models.ResponseModel;
 
 namespace EmployeeManagement.BLL.Services
 {
@@ -50,5 +51,29 @@ namespace EmployeeManagement.BLL.Services
 				StateId = addEditEmployeeRequestModel.StateId
 			};
 		}
+
+        public async Task<List<EmployeeResponseModel>> GetEmployeeListAsync()
+        {
+			try
+			{
+				var allEmployees = await _employeeRepository.GetAllEmployeesAsync();
+
+				return allEmployees.Select(x => new EmployeeResponseModel
+				{
+				  EmployeeId = x.EmployeeId,
+				  DateOfJoin = x.DateOfJoin,
+				  DateOfBirth = x.Member.DateOfBirth,
+				  Name = x.Member.Name,
+				  Designation = x.Designation,
+				  MemberId = x.MemberId,
+				  Salary = x.Salary,
+				  StateId = x.StateId
+				}).ToList();
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+        }
     }
 }

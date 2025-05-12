@@ -90,7 +90,8 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             try
             {
                 return await _dbContext.Employees
-                             .Where(x => x.IsDeleted == false)
+                             .Include(x => x.Member)
+                             .Where(x => x.IsDeleted == false && x.Member != null)
                              .ToListAsync();
             }
             catch (Exception)

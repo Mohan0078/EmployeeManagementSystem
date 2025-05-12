@@ -16,12 +16,13 @@ namespace EmployeeManagement.API.Controllers
             _employeeService = employeeService;
         }
 
-        [HttpGet]
+        [HttpGet("GetEmployeeList")]
         public async Task<IActionResult> GetEmployeeList()
         {
             try
             {
-                return Ok();
+                var result = await _employeeService.GetEmployeeListAsync(); 
+                return Ok(result);
             }
             catch (Exception ex)
             {
