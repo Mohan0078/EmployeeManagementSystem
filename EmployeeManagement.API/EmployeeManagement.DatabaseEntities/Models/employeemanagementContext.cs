@@ -38,13 +38,25 @@ namespace EmployeeManagement.DatabaseEntities.Models
             {
                 entity.ToTable("employee");
 
+                entity.HasIndex(e => e.MemberId, "FK_Employee_Member_idx");
+
+                entity.HasIndex(e => e.StateId, "FK_Employee_State_idx");
+
                 entity.Property(e => e.DateOfJoin).HasColumnType("datetime");
 
                 entity.Property(e => e.Designation).HasMaxLength(250);
 
-                entity.Property(e => e.IsDeleted).HasMaxLength(45);
-
                 entity.Property(e => e.Salary).HasPrecision(10);
+
+                entity.HasOne(d => d.Member)
+                    .WithMany(p => p.Employees)
+                    .HasForeignKey(d => d.MemberId)
+                    .HasConstraintName("FK_Employee_Member");
+
+                entity.HasOne(d => d.State)
+                    .WithMany(p => p.Employees)
+                    .HasForeignKey(d => d.StateId)
+                    .HasConstraintName("FK_Employee_State");
             });
 
             modelBuilder.Entity<Member>(entity =>

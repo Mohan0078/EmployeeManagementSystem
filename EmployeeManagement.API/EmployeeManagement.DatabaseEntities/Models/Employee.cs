@@ -12,5 +12,8 @@ namespace EmployeeManagement.DatabaseEntities.Models
         public decimal? Salary { get; set; }
         public Guid? StateId { get; set; }
         public bool IsDeleted { get; set; }
+
+        public virtual Member? Member { get; set; }
+        public virtual State? State { get; set; }
     }
 }
