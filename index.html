@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee Management</title>
+
+  <!-- jQuery + Chart.js + jsPDF CDN -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .modal { display: none; position: fixed; top: 20%; left: 25%; background: #fff; padding: 20px; border: 1px solid #ccc; z-index: 1000; }
+    .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 8px; text-align: left; }
+    th.sortable:hover { cursor: pointer; background: #f0f0f0; }
+    .button { margin: 5px; }
+  </style>
+</head>
+<body>
+
+<h2>Employee Management</h2>
+<button id="addEmployeeBtn" class="button">Add Employee</button>
+<input type="text" id="searchBox" placeholder="Search by name..." />
+
+<!-- Employee Modal -->
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="employeeModal">
+  <h3 id="modalTitle">Add Employee</h3>
+  <form id="employeeForm">
+    <input type="hidden" id="empId" />
+    <label>Name: <input type="text" id="name" required /></label><br/>
+    <label>Designation: <input type="text" id="designation" required /></label><br/>
+    <label>DOB: <input type="date" id="dob" required /></label>
+    <label>Age: <span id="ageLabel"></span></label><br/>
+    <label>Date of Join: <input type="date" id="doj" required /></label><br/>
+    <label>Salary: <input type="number" id="salary" required /></label><br/>
+    <label>Gender: 
+      <select id="gender">
+        <option>Male</option>
+        <option>Female</option>
+      </select>
+    </label><br/>
+    <label>State:
+      <select id="state"></select>
+    </label><br/><br/>
+    <button type="submit">Save</button>
+    <button type="button" id="updateBtn" style="display:none">Update</button>
+    <button type="button" id="clearBtn">Clear</button>
+    <button type="button" id="closeBtn">Close</button>
+  </form>
+</div>
+
+<!-- Employee Table -->
+<table id="employeeTable">
+  <thead>
+    <tr>
+      <th><input type="checkbox" id="selectAll"/></th>
+      <th class="sortable" data-sort="name">Name</th>
+      <th class="sortable" data-sort="designation">Designation</th>
+      <th>DOB</th>
+      <th>Age</th>
+      <th>Join Date</th>
+      <th>Salary</th>
+      <th>Gender</th>
+      <th>State</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<button id="deleteSelected" class="button">Delete Selected</button>
+<div>Total Salary: <span id="totalSalary">0</span></div>
+<button id="prevPage" class="button">Previous</button>
+<button id="nextPage" class="button">Next</button>
+<button id="showChartBtn" class="button">Show Chart</button>
+<button id="downloadPdfBtn" class="button">Download PDF</button>
+
+<!-- Chart Modal -->
+<div class="modal" id="chartModal">
+  <h3>Employee Salary Chart</h3>
+  <canvas id="employeeChart" width="400" height="200"></canvas><br/>
+  <button onclick="$('#chartModal').hide();">Close</button>
+</div>
+
+<script>
+let employees = [];
+let page = 0;
+const pageSize = 5;
+let sortField = 'name';
+let ascending = true;
+
+$(document).ready(() => {
+fetchEmployeeList();
+
+fetch('https://localhost:7214/api/State/GetStateList')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(states => {
+    const $state = $('#state');
+    $state.empty();
+    states.forEach(state => {
+      $state.append(`<option value="${state.stateId}">${state.stateName}</option>`);
+    });
+  })
+  .catch(error => {
+    console.error('Error fetching states:', error);
+    alert('Failed to load states.');
+  });
+
+
+  $('#addEmployeeBtn').click(() => openModal());
+  $('#closeBtn').click(() => closeModal());
+  $('#dob').change(() => {
+    const dob = new Date($('#dob').val());
+    const age = new Date().getFullYear() - dob.getFullYear();
+    $('#ageLabel').text(age);
+  });
+
+  $('#employeeForm').submit(function (e) {
+  e.preventDefault();
+
+  const employee = getFormData();
+
+  // Make the POST request to save the employee
+  fetch('https://localhost:7214/api/Employee/AddEmployee', { 
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(employee)  // Send the employee object as JSON in the body
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert('Employee saved successfully!');
+    employees.push(data); // Optionally push the new employee into the local array
+    closeModal();
+    fetchEmployeeList(); // re-fetch and render updated list
+  })
+  .catch(error => {
+    console.error('Error saving employee:', error);
+    alert('Error saving employee');
+  });
+});
+
+
+  $('#clearBtn').click(() => $('#employeeForm')[0].reset());
+
+  $('#selectAll').change(function() {
+    $('input[name="rowCheckbox"]').prop('checked', this.checked);
+  });
+
+  $('#deleteSelected').click(() => {
+  if (confirm("Delete selected records?")) {
+    let employeeIds = [];
+
+    // Collect the checked checkboxes
+    $('input[name="rowCheckbox"]:checked').each(function () {
+      const employeeId = $(this).data('id');
+      employeeIds.push(employeeId);
+      console.log(employeeId)
+    });
+
+    if (employeeIds.length > 0) {
+      deleteSelectedEmployees(employeeIds);
+    } else {
+      alert("No employees selected for deletion.");
+    }
+  }
+});
+
+  $('.sortable').click(function () {
+    const field = $(this).data('sort');
+    if (sortField === field) ascending = !ascending;
+    else { sortField = field; ascending = true; }
+    renderTable();
+  });
+
+  $('#showChartBtn').click(() => {
+    $('#chartModal').show();
+    renderChart();
+  });
+
+  $('#downloadPdfBtn').click(() => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text("Employee List", 10, 10);
+    doc.autoTable({ html: '#employeeTable' });
+    doc.save("employees.pdf");
+  });
+
+  renderTable();
+});
+
+function openModal(emp = null) {
+  $('#overlay, #employeeModal').show();
+  if (emp) {
+    $('#modalTitle').text('Edit Employee');
+    $('#empId').val(emp.id);
+    $('#name').val(emp.name);
+    $('#designation').val(emp.designation);
+    $('#dob').val(emp.dob);
+    $('#doj').val(emp.doj);
+    $('#salary').val(emp.salary);
+    $('#gender').val(emp.gender);
+    $('#state').val(emp.state);
+    $('#updateBtn').show();
+  } else {
+    $('#employeeForm')[0].reset();
+    $('#updateBtn').hide();
+    $('#modalTitle').text('Add Employee');
+  }
+}
+
+function closeModal() {
+  $('#overlay, #employeeModal').hide();
+  $('#employeeForm')[0].reset();
+}
+
+function getFormData() {
+  const dob = $('#dob').val();
+  const age = new Date().getFullYear() - new Date(dob).getFullYear();
+  $('#ageLabel').text(age);
+  return {
+    name: $('#name').val(),
+    designation: $('#designation').val(),
+    dateOfBirth: dob,
+    dateOfJoin: $('#doj').val(),
+    salary: parseFloat($('#salary').val()),
+    gender: $('#gender').val(),
+    stateId: $('#state').val(),
+    age: age
+  };
+}
+
+let searchQuery = ''; // Variable to hold the search input
+
+// Capture input from the search box and update searchQuery
+$('#searchBox').on('input', () => {
+  searchQuery = $('#searchBox').val();
+  fetchEmployeeList();
+});
+
+// Modify the fetchEmployeeList function to include searchQuery
+function fetchEmployeeList() {
+  let apiUrl = 'https://localhost:7214/api/Employee/GetEmployeeList';
+  
+  // Append search query to the URL if it's not empty
+  if (searchQuery && searchQuery.length > 0) {
+    apiUrl += `?nameFilter=${encodeURIComponent(searchQuery)}`;
+    searchQuery = '';
+  }
+  else{
+    searchQuery = null;
+    apiUrl += `?nameFilter=${encodeURIComponent(searchQuery)}`;
+  }
+
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to fetch employees');
+      return response.json();
+    })
+    .then(data => {
+      employees = data;
+      renderTable();
+    })
+    .catch(error => {
+      console.error('Error fetching employee list:', error);
+      alert('Could not load employees.');
+    });
+}
+
+ function renderTable() {
+  const tbody = $('#employeeTable tbody').empty();
+
+  employees.forEach(e => {
+    const age = new Date().getFullYear() - new Date(e.dateOfBirth).getFullYear();
+    const tr = `<tr>
+      <td><input type="checkbox" name="rowCheckbox" data-id="${e.employeeId}"></td>
+      <td><a href="#" onclick='editEmployee(${e.employeeId})'>${e.name}</a></td>
+      <td>${e.designation}</td>
+      <td>${e.dateOfBirth}</td>
+      <td>${age}</td>
+      <td>${e.dateOfJoin}</td>
+      <td>${e.salary}</td>
+      <td>${e.gender}</td>
+      <td>${e.stateName}</td>
+      <td><button class="delete-btn" data-id="${e.employeeId}">Delete</button></td>
+    </tr>`;
+    tbody.append(tr);
+  });
+
+  // Event listener for delete button
+  $('.delete-btn').on('click', function () {
+    const employeeId = $(this).data('id');
+    deleteEmployee(employeeId);
+  });
+
+  updateTotalSalary();
+}
+
+
+function updateTotalSalary() {
+  let total = employees.reduce((sum, emp) => sum + parseFloat(emp.salary || 0), 0);
+  $('#totalSalary').text(`Total Salary: $${total.toFixed(2)}`);
+}
+
+function deleteEmployee(id) {
+    if (!confirm('Are you sure you want to delete this employee?')) return;
+
+  fetch(`https://localhost:7214/api/Employee/DeleteEmployeeById/${id}`, {
+    method: 'DELETE'
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to delete employee');
+      alert('Employee deleted successfully');
+      fetchEmployeeList();
+    })
+    .catch(error => {
+      console.error('Error deleting employee:', error);
+      alert('Error deleting employee');
+    });
+}
+
+function deleteSelectedEmployees(employeeIds) {
+  if (!confirm('Are you sure you want to delete these employees?')) return;
+
+  // Convert the array of GUIDs into a query string
+  const queryString = employeeIds.map(id => `employeeIds=${encodeURIComponent(id)}`).join('&');
+
+  console.log(queryString);
+  fetch(`https://localhost:7214/api/Employee/DeleteSelectedEmployees?${queryString}`, {
+    method: 'DELETE'
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Failed to delete employees');
+    alert('Employees deleted successfully');
+    fetchEmployeeList();  // Refresh the employee list after deletion
+  })
+  .catch(error => {
+    console.error('Error deleting employees:', error);
+    alert('Error deleting employees');
+  });
+}
+
+
+
+function editEmployee(id) {
+}
+
+function renderChart() {
+  const ctx = document.getElementById('employeeChart').getContext('2d');
+  const labels = employees.map(e => e.designation);
+  const data = employees.map(e => e.salary);
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Salary by Designation',
+        data: data,
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+      }]
+    }
+  });
+}
+</script>
+
+</body>
+</html>
