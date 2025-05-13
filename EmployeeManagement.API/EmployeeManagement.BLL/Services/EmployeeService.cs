@@ -78,5 +78,17 @@ namespace EmployeeManagement.BLL.Services
 				throw;
 			}
         }
-    }
+
+		public async Task<bool> DeleteEmployeeByIdAsync(Guid employeeId)
+		{
+			try
+			{
+				return await _employeeRepository.DeleteEmployeeAsync(employeeId);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+		}
+	}
 }

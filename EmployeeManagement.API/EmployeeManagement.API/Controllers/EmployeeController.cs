@@ -20,7 +20,7 @@ namespace EmployeeManagement.API.Controllers
         {
             try
             {
-                var result = await _employeeService.GetEmployeeListAsync(); 
+                var result = await _employeeService.GetEmployeeListAsync();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -34,6 +34,20 @@ namespace EmployeeManagement.API.Controllers
             try
             {
                 var result = await _employeeService.AddEmployeeAsync(addEditEmployeeRequestModel);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete("DeleteEmployeeById/{employeeId}")]
+        public async Task<IActionResult> DeleteEmployeeById(Guid employeeId)
+        {
+            try
+            {
+                var result = await _employeeService.DeleteEmployeeByIdAsync(employeeId);
                 return Ok(result);
             }
             catch (Exception ex)

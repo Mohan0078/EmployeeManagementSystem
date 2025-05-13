@@ -45,11 +45,14 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             try
             {
                 var employeeToBeDeleted = await _dbContext.Employees
+                                                .Include(x => x.Member)
                                                 .FirstOrDefaultAsync(x => x.EmployeeId == employeeId 
-                                                                    && x.IsDeleted == false);
+                                                                    && x.IsDeleted == false
+                                                                    && x.Member != null);
                 if(employeeToBeDeleted != null)
                 {
                     employeeToBeDeleted.IsDeleted = true;
+                    employeeToBeDeleted.Member.IsDeleted = true;
                     return await _dbContext.SaveChangesAsync() > 0;
                 }
 
