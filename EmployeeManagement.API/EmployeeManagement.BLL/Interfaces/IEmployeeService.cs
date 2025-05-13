@@ -9,5 +9,6 @@ namespace EmployeeManagement.BLL.Interfaces
         Task<bool> AddEmployeeAsync(AddEditEmployeeRequestModel addEditEmployeeRequestModel);
         Task<List<EmployeeResponseModel>> GetEmployeeListAsync();
         Task<bool> DeleteEmployeeByIdAsync(Guid employeeId);
+        Task<bool> DeleteSelectedEmployeesAsync(List<Guid> employeeIds);
     }
 }

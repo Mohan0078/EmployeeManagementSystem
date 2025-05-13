@@ -55,5 +55,19 @@ namespace EmployeeManagement.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+        [HttpDelete("DeleteSelectedEmployees")]
+        public async Task<IActionResult> DeleteSelectedEmployees([FromQuery] List<Guid> employeeIds)
+        {
+            try
+            {
+                var result = await _employeeService.DeleteSelectedEmployeesAsync(employeeIds);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }

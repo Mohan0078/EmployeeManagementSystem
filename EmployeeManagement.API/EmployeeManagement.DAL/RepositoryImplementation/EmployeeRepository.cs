@@ -26,7 +26,7 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
                 throw;
             }
         }
-        
+
         public async Task<bool> AddEmployeeAsync(Employee employee)
         {
             try
@@ -40,16 +40,16 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             }
         }
 
-        public  async Task<bool> DeleteEmployeeAsync(Guid employeeId)
+        public async Task<bool> DeleteEmployeeByIdAsync(Guid employeeId)
         {
             try
             {
                 var employeeToBeDeleted = await _dbContext.Employees
                                                 .Include(x => x.Member)
-                                                .FirstOrDefaultAsync(x => x.EmployeeId == employeeId 
+                                                .FirstOrDefaultAsync(x => x.EmployeeId == employeeId
                                                                     && x.IsDeleted == false
                                                                     && x.Member != null);
-                if(employeeToBeDeleted != null)
+                if (employeeToBeDeleted != null)
                 {
                     employeeToBeDeleted.IsDeleted = true;
                     employeeToBeDeleted.Member.IsDeleted = true;
@@ -74,12 +74,12 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
                 var isEmployeeExist = await _dbContext.Employees
                                                       .AnyAsync(x => x.EmployeeId == employee.EmployeeId
                                                                      && x.IsDeleted == false);
-                if(isEmployeeExist)
+                if (isEmployeeExist)
                 {
                     _dbContext.Update(employee);
                     return await _dbContext.SaveChangesAsync() > 0;
                 }
-                
+
                 return false; // if data not found
             }
             catch (Exception)
@@ -111,6 +111,33 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
                 return await _dbContext.Employees
                              .FirstOrDefaultAsync(x => x.EmployeeId == employeeId
                                                        && x.IsDeleted == false);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteSelectedEmployeesAsync(List<Guid> employeeIds)
+        {
+            try
+            {
+                var employeesToBeDeleted = await _dbContext.Employees
+                                                    .Include(x => x.Member)
+                                                    .Where(x => employeeIds.Contains(x.EmployeeId)
+                                                                && x.IsDeleted == false
+                                                                && x.Member != null).ToListAsync();
+                if (employeesToBeDeleted.Any())
+                {
+                    foreach (var employeeToBeDeleted in employeesToBeDeleted)
+                    {
+                        employeeToBeDeleted.IsDeleted = true;
+                        employeeToBeDeleted.Member.IsDeleted = true;
+                    }
+                    return await _dbContext.SaveChangesAsync() > 0;
+                }
+
+                return false; // Not able to delete as the data is not found
             }
             catch (Exception)
             {
