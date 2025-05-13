@@ -7,7 +7,7 @@ namespace EmployeeManagement.BLL.Interfaces
     public interface IEmployeeService
     {
         Task<bool> AddEmployeeAsync(AddEditEmployeeRequestModel addEditEmployeeRequestModel);
-        Task<List<EmployeeResponseModel>> GetEmployeeListAsync();
+        Task<List<EmployeeResponseModel>> GetEmployeeListAsync(string nameFilter);
         Task<bool> DeleteEmployeeByIdAsync(Guid employeeId);
         Task<bool> DeleteSelectedEmployeesAsync(List<Guid> employeeIds);
     }

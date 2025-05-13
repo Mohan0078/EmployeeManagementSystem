@@ -8,7 +8,7 @@ namespace EmployeeManagement.DAL.RepositoryInterfaces
         Task<bool> AddEmployeeAsync(Employee employee);
         Task<bool> EditEmployeeAsync(Employee employee);
         Task<Employee> GetEmployeeByIdAsync(Guid employeeId);
-        Task<List<Employee>> GetAllEmployeesAsync();
+        Task<List<Employee>> GetAllEmployeesAsync(string nameFilter=null);
         Task<bool> DeleteEmployeeByIdAsync(Guid employeeId);
         Task<bool> DeleteSelectedEmployeesAsync(List<Guid> employeeId);
     }

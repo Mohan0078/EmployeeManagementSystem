@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.DAL.RepositoryInterfaces;
 using EmployeeManagement.DatabaseEntities.Models;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.DAL.RepositoryImplementation
@@ -88,14 +89,22 @@ namespace EmployeeManagement.DAL.RepositoryImplementation
             }
         }
 
-        public async Task<List<Employee>> GetAllEmployeesAsync()
+        public async Task<List<Employee>> GetAllEmployeesAsync(string nameFilter = null)
         {
             try
             {
+                var employeeSearchPredicate = PredicateBuilder.New<Employee>(x => x.IsDeleted == false 
+                                                                                  && x.Member != null 
+                                                                                  && x.State != null);
+                if(nameFilter != "" && nameFilter != null && nameFilter != "null")
+                {
+                    employeeSearchPredicate = employeeSearchPredicate.And(x => x.Member.Name.Contains(nameFilter));
+                }
+
                 return await _dbContext.Employees
                              .Include(x => x.Member)
                              .Include(x => x.State)
-                             .Where(x => x.IsDeleted == false && x.Member != null && x.State != null)
+                             .Where(employeeSearchPredicate)
                              .ToListAsync();
             }
             catch (Exception)

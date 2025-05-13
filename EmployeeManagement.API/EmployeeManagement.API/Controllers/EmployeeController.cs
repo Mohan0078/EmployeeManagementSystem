@@ -16,11 +16,11 @@ namespace EmployeeManagement.API.Controllers
         }
 
         [HttpGet("GetEmployeeList")]
-        public async Task<IActionResult> GetEmployeeList()
+        public async Task<IActionResult> GetEmployeeList([FromQuery]string nameFilter)
         {
             try
             {
-                var result = await _employeeService.GetEmployeeListAsync();
+                var result = await _employeeService.GetEmployeeListAsync(nameFilter);
                 return Ok(result);
             }
             catch (Exception ex)

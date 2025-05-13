@@ -53,7 +53,7 @@ namespace EmployeeManagement.BLL.Services
 			};
 		}
 
-        public async Task<List<EmployeeResponseModel>> GetEmployeeListAsync()
+        public async Task<List<EmployeeResponseModel>> GetEmployeeListAsync(string nameFilter)
         {
 			try
 			{
